@@ -113,7 +113,13 @@ function Find-SystemBrowser {
 function Write-BrowserEnv {
     param([string]$BrowserPath)
     $envFile = "$HermesHome\.env"
-    if (-not (Test-Path $envFile)) { return }
+    # Create .env if it doesn't exist (pip/registry users may not have run setup yet)
+    if (-not (Test-Path $HermesHome)) {
+        New-Item -ItemType Directory -Force -Path $HermesHome | Out-Null
+    }
+    if (-not (Test-Path $envFile)) {
+        New-Item -ItemType File -Force -Path $envFile | Out-Null
+    }
     $content = Get-Content $envFile -Raw -ErrorAction SilentlyContinue
     if ($content -and $content -match "AGENT_BROWSER_EXECUTABLE_PATH=") {
         Write-Info "AGENT_BROWSER_EXECUTABLE_PATH already configured"

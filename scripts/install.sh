@@ -2046,18 +2046,7 @@ postinstall_mode() {
     check_network_prerequisites
     install_system_packages
 
-    if [ "$HAS_NODE" = true ] && [ "$SKIP_BROWSER" = false ]; then
-        DETECTED_BROWSER_EXECUTABLE="$(find_system_browser 2>/dev/null || true)"
-        if [ -z "$DETECTED_BROWSER_EXECUTABLE" ]; then
-            log_info "Installing browser engine..."
-            npm_bin="$(command -v npm 2>/dev/null || echo "")"
-            if [ -n "$npm_bin" ]; then
-                npx playwright install chromium 2>/dev/null || true
-            fi
-        else
-            log_success "System browser found: $DETECTED_BROWSER_EXECUTABLE"
-        fi
-    fi
+    ensure_browser
 
     HERMES_CMD="$(command -v hermes 2>/dev/null || echo "")"
     if [ -n "$HERMES_CMD" ]; then
